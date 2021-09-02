@@ -10,8 +10,8 @@
 
 long calc(int operator, int nValues, int *values) {
     
-    int resultado = values[2];
-    printf("%i", resultado);
+    long resultado = values[2];
+    printf("%ld", resultado);
     for (int i = 3; i < nValues; i++){
         if(operator == 1){
             printf(" + %i", values[i]);
@@ -24,9 +24,7 @@ long calc(int operator, int nValues, int *values) {
             resultado *= values[i];
         }
     } 
-    printf(" = %i \n", resultado);  
-   
-    return 0;
+    return resultado;
 }
 
 int main(int argc, char*argv[]) {
@@ -60,7 +58,8 @@ int main(int argc, char*argv[]) {
             num[i]=atoi(argv[i]);   
         }
         
-        calc(operator,argc, num);
+        long resultado = calc(operator,argc, num);
+        printf(" = %ld \n", resultado);  
         return -1;
     }else{
         printf("No ingresaste suficientes parametros: ");
