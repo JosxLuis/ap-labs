@@ -28,9 +28,7 @@ func calc(operator int, values []int) int {
 		}
 	}
 
-	fmt.Print(" = ", resultado)
-	fmt.Println("")
-	return 0
+	return resultado
 }
 
 func main() {
@@ -62,6 +60,9 @@ func main() {
 				return
 			}
 		}
-		calc(operator, slice)
+
+		resultado := calc(operator, slice)
+		fmt.Print(" = ", resultado)
+		fmt.Println("")
 	}
 }
