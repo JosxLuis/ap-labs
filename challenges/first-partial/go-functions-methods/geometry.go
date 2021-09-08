@@ -133,29 +133,62 @@ func main() {
 			var slice Path
 
 			puntos := make([]Point, 0, 5)
+			segmentos := make([]Point, 0, 5)
 
 			for i := 0; i < intValue; i++ {
 				puntos = append(puntos, newPoint(math.Floor((randFloat(-100, 100))*100)/100, math.Floor((randFloat(-100, 100))*100)/100))
 			}
 
-			slice = puntos
+			segmentos = append(segmentos, newPoint(puntos[0].X(), puntos[0].Y()))
 
+			for i := 1; i < intValue; i++ {
+				segmentos = append(segmentos, newPoint(puntos[i].X(), puntos[i].Y()))
+				segmentos = append(segmentos, newPoint(puntos[i].X(), puntos[i].Y()))
+			}
+
+			segmentos = append(segmentos, newPoint(puntos[0].X(), puntos[0].Y()))
+
+			flag := false
 			var i, j int
-			for i = 0; i < (intValue/2)+1; i++ {
-				for j = i + 2; j < intValue-1; j++ {
-					//fmt.Println("Comparar", slice[i], slice[i+1], "con: ", slice[j], slice[j+1])
-					for verifyIntersect(slice[i], slice[i+1], slice[j], slice[j+1]) == true {
-						slice[j] = newPoint(math.Floor((randFloat(-100, 100))*100)/100, math.Floor((randFloat(-100, 100))*100)/100)
-						slice[j+1] = newPoint(math.Floor((randFloat(-100, 100))*100)/100, math.Floor((randFloat(-100, 100))*100)/100)
+			for i = 0; i < (intValue*2)+1; i++ {
+				for j = i + 2; j < intValue*2-1; j++ {
+					//time.Sleep(2 * time.Second)
+					//fmt.Println("Comparar", segmentos[i], segmentos[i+1], "con: ", segmentos[j], segmentos[j+1])
+					if segmentos[i+1] == segmentos[j] || segmentos[j+1] == segmentos[i] {
+						flag = false
+					} else {
+						for verifyIntersect(segmentos[i], segmentos[i+1], segmentos[j], segmentos[j+1]) == true {
+							q := newPoint(math.Floor((randFloat(-100, 100))*100)/100, math.Floor((randFloat(-100, 100))*100)/100)
+							for h := 0; h < len(puntos); h++ {
+								if puntos[h] == segmentos[j] {
+									puntos[h] = q
+								}
+							}
+
+							for k := 0; k < len(segmentos); k++ {
+								if segmentos[k] == segmentos[j] {
+									segmentos[k] = q
+								}
+							}
+
+							flag = true
+							i = 0
+							break
+
+						}
 					}
-					j++
+					if flag == true {
+						j = 0
+					} else {
+						j++
+					}
 				}
 				i++
 			}
 
 			puntos = append(puntos, puntos[0])
 			slice = puntos
-			//fmt.Println("Slice: ", slice)
+
 			fmt.Println(" - Generating a [", intValue, "] sides figure")
 			fmt.Println(" - Figure's vertices")
 			for i := 0; i < len(slice)-1; i++ {
@@ -177,6 +210,7 @@ func main() {
 
 			fmt.Printf(" =  %.3f", slice.Distance())
 			fmt.Println("")
+
 		} else {
 			fmt.Println("No ingresaste un numero mayor de 2 puntos")
 		}
