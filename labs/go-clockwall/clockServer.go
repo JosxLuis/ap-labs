@@ -2,16 +2,29 @@
 package main
 
 import (
+	"flag"
 	"io"
 	"log"
 	"net"
+	"strconv"
 	"time"
 )
 
-func handleConn(c net.Conn) {
+func handleConn(c net.Conn, port string) {
 	defer c.Close()
+
+	var loc *time.Location
+	switch port {
+	case "8010":
+		loc, _ = time.LoadLocation("US/Eastern")
+	case "8020":
+		loc, _ = time.LoadLocation("Asia/Tokyo")
+	case "8030":
+		loc, _ = time.LoadLocation("Europe/London")
+	}
+
 	for {
-		_, err := io.WriteString(c, time.Now().Format("15:04:05\n"))
+		_, err := io.WriteString(c, loc.String()+" : "+time.Now().In(loc).Format("15:04:05\n"))
 		if err != nil {
 			return // e.g., client disconnected
 		}
@@ -20,16 +33,21 @@ func handleConn(c net.Conn) {
 }
 
 func main() {
-	listener, err := net.Listen("tcp", "localhost:9090")
+	port := flag.Int("port", 8000, "The port of the clock server")
+	flag.Parse()
+
+	listener, err := net.Listen("tcp", "localhost:"+strconv.Itoa(*port))
+
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
 			log.Print(err) // e.g., connection aborted
 			continue
 		}
-		go handleConn(conn) // handle connections concurrently
+		go handleConn(conn, strconv.Itoa(*port)) // handle connections concurrently
 	}
 }
